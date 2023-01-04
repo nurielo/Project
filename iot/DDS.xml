@@ -1,0 +1,364 @@
+<?xml version="1.0"?>
+<!--
+(c) 2005-2015 Copyright, Real-Time Innovations.  All rights reserved.
+No duplications, whole or partial, manual or electronic, may be made
+without express written permission.  Any such copies, or revisions thereof,
+must display this notice unaltered.
+This code contains trade secrets of Real-Time Innovations, Inc.
+ -->
+
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/5.1.0/rti_dds_profiles.xsd" version="5.1.0">
+
+        <!-- Qos Library -->
+	    <qos_library name="QosLibrary">
+
+        </qos_library>
+
+        <!-- types -->
+         <types>
+            <struct name="button">
+                <member name="start" stringMaxLength="128" type="string"/>
+            </struct>
+            <struct name="sensor">
+                <member name="temperature" type="int32"/>
+            </struct>
+            <struct name="dashboardStatus">
+                <member name="ID" stringMaxLength="128" type="string"/>
+                <member name="status" stringMaxLength="128" type="string"/>
+            </struct>
+            <struct name="dashboardTemperature">
+                <member name="temperature"  type="int32"/>
+            </struct>
+            <struct name="dashboardTime">
+                <member name="cameraTime" stringMaxLength="128" type="string"/>
+            </struct>
+         </types>
+
+
+        <!-- Domain Library -->
+        <!-- this is related to the domain 0 that we set on shape deme-->
+         <domain_library name="MyDomainLibrary">
+             <domain name="MyDomain" domain_id="0">
+                 <register_type name="button"  type_ref="button" />
+                 <topic name="status" register_type_ref="button"/>
+                 <register_type name="sensor"  type_ref="sensor" />
+                 <topic name="sensor1" register_type_ref="sensor"/>
+                 <topic name="sensor2" register_type_ref="sensor"/>
+                 <register_type name="dashboardTime"  type_ref="dashboardTime" />
+                 <topic name="DashboardTime" register_type_ref="dashboardTime"/>
+             <!--    <register_type name="dashboardTemperature"  type_ref="dashboardTemperature" />
+                 <topic name="DashboardTemperature1" register_type_ref="dashboardTemperature"/>
+                 <topic name="DashboardTemperature2" register_type_ref="dashboardTemperature"/>-->
+                 <register_type name="dashboardStatus"  type_ref="dashboardStatus" />
+                 <topic name="DashboardStatus1" register_type_ref="dashboardStatus"/>
+                 <topic name="DashboardStatus2" register_type_ref="dashboardStatus"/>
+             </domain>
+         </domain_library>
+
+
+        <!-- Participant library -->
+        <domain_participant_library name="MyParticipantLibrary">
+<!--button participant-->
+             <domain_participant name="button" domain_ref="MyDomainLibrary::MyDomain">
+                 <publisher name="buttonWriter">
+                      <data_writer name="buttonStatus" topic_ref="status">
+                          <datawriter_qos>
+                             <reliability>
+                                 <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                             </reliability>
+                             <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                             </durability>
+                             <history>
+<!--		                    <kind>KEEP_ALL_HISTORY_QOS</kind>-->
+                                 <kind>KEEP_LAST_HISTORY_QOS</kind>
+                                 <depth>1</depth>
+	                         </history>
+                          </datawriter_qos>
+                     </data_writer>
+                 </publisher>
+             </domain_participant>
+        <!--camera-->
+            <domain_participant name="camera" domain_ref="MyDomainLibrary::MyDomain">
+                 <publisher name="cameraWriter">
+                     <data_writer name="cameraTime" topic_ref="DashboardTime">
+                            <datawriter_qos>
+                                <reliability>
+ <!--                            <kind>RELIABLE_RELIABILITY_QOS</kind>-->
+                                     <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+                                </reliability>
+                                <durability>
+                                    <kind>VOLATILE_DURABILITY_QOS</kind>
+<!--                             <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>-->
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                </durability>
+                            </datawriter_qos>
+                     </data_writer>
+                 </publisher>
+            </domain_participant>
+
+ <!--sensor1 participant-->
+             <domain_participant name="sensor1" domain_ref="MyDomainLibrary::MyDomain">
+                    <publisher name="sensor1Writer">
+                      <data_writer name="sensor1Actuator1" topic_ref="sensor1">
+                          <datawriter_qos>
+                                <reliability>
+                                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                                </reliability>
+                                <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                                     <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                </durability>
+                                 <history>
+		                    <kind>KEEP_ALL_HISTORY_QOS</kind>
+  <!--                                   <kind>KEEP_LAST_HISTORY_QOS</kind>-->
+  <!--                                   <depth>10</depth>-->
+	                            </history>
+                          </datawriter_qos>
+                      </data_writer>
+                    </publisher>
+             </domain_participant>
+         <!--sensor2 participant-->
+             <domain_participant name="sensor2" domain_ref="MyDomainLibrary::MyDomain">
+                    <publisher name="sensor2Writer">
+                         <data_writer name="sensor2Actuator2" topic_ref="sensor2">
+                             <datawriter_qos>
+                                <reliability>
+                                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                                </reliability>
+                                <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                </durability>
+                                <history>
+                                        <kind>KEEP_ALL_HISTORY_QOS</kind>
+  <!--                                   <kind>KEEP_LAST_HISTORY_QOS</kind>-->
+  <!--                                   <depth>10</depth>-->
+                                </history>
+                            </datawriter_qos>
+                        </data_writer>
+                    </publisher>
+             </domain_participant>
+
+ <!--actuator1 participant-->
+
+            <domain_participant name="actuator1" domain_ref="MyDomainLibrary::MyDomain">
+                    <subscriber name="actuator1Reader">
+                        <data_reader name="buttonStatus" topic_ref="status" >
+                             <datareader_qos>
+                                <reliability>
+                                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                                </reliability>
+                                <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                </durability>
+
+                             </datareader_qos>
+                        </data_reader>
+
+                        <data_reader name="Sensor1Temperature" topic_ref="sensor1" >
+                            <datareader_qos>
+                                <reliability>
+                                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                                </reliability>
+                                <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                </durability>
+
+                            </datareader_qos>
+                        </data_reader>
+                    </subscriber>
+
+                    <publisher name="actuator1Writer">
+                        <data_writer name="actuator1Dashboard" topic_ref="DashboardStatus1">
+                            <datawriter_qos>
+                                <reliability>
+                                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                                </reliability>
+                                <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                                     <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                </durability>
+                                <history>
+	<!--	                    <kind>KEEP_ALL_HISTORY_QOS</kind>-->
+                                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                                    <depth>10</depth>
+	                            </history>
+                            </datawriter_qos>
+                        </data_writer>
+                    </publisher>
+            </domain_participant>
+ <!--actuator2 participant-->
+            <domain_participant name="actuator2" domain_ref="MyDomainLibrary::MyDomain">
+                    <subscriber name="actuator2Reader">
+                        <data_reader name="buttonStatus" topic_ref="status" >
+                            <datareader_qos>
+                                <reliability>
+                                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                                </reliability>
+                                <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                </durability>
+
+                            </datareader_qos>
+                        </data_reader>
+
+                        <data_reader name="Sensor2Temperature" topic_ref="sensor2" >
+                            <datareader_qos>
+                                <reliability>
+                                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                                </reliability>
+                                <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                </durability>
+
+                            </datareader_qos>
+                        </data_reader>
+                    </subscriber>
+
+                    <publisher name="actuator2Writer">
+                        <data_writer name="actuator2Dashboard" topic_ref="DashboardStatus2">
+                            <datawriter_qos>
+                                <reliability>
+                                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                                </reliability>
+                                <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                </durability>
+                                <history>
+<!--		                    <kind>KEEP_ALL_HISTORY_QOS</kind>-->
+                                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                                    <depth>10</depth>
+	                            </history>
+                            </datawriter_qos>
+                        </data_writer>
+                    </publisher>
+            </domain_participant>
+<!--Dashboard participant-->
+            <domain_participant name="dashboard" domain_ref="MyDomainLibrary::MyDomain">
+                    <subscriber name="dashboardReader">
+                         <data_reader name="timeCamera" topic_ref="DashboardTime" >
+                            <datareader_qos>
+                                <reliability>
+ <!--                            <kind>RELIABLE_RELIABILITY_QOS</kind>-->
+                                    <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+                                </reliability>
+                                <durability>
+                                    <kind>VOLATILE_DURABILITY_QOS</kind>
+<!--                             <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>-->
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                </durability>
+                            </datareader_qos>
+                        </data_reader>
+
+                        <data_reader name="temperatureSensor1" topic_ref="sensor1" >
+                             <datareader_qos>
+                                    <reliability>
+                                         <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                                    </reliability>
+                                    <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                                        <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                    </durability>
+                                    <history>
+                                        <kind>KEEP_ALL_HISTORY_QOS</kind>
+  <!--                                   <kind>KEEP_LAST_HISTORY_QOS</kind>-->
+  <!--                                   <depth>10</depth>-->
+                                </history>
+                            </datareader_qos>
+                            <filter name="Extreme_Temperature" kind="builtin.sql">
+                              <expression> (temperature>40 or 20>temperature) </expression>
+                            </filter>
+                        </data_reader>
+                        <data_reader name="temperatureSensor2" topic_ref="sensor2" >
+                            <datareader_qos>
+                                    <reliability>
+                                        <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                                    </reliability>
+                                    <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                                        <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                    </durability>
+                                    <history>
+                                        <kind>KEEP_ALL_HISTORY_QOS</kind>
+  <!--                                   <kind>KEEP_LAST_HISTORY_QOS</kind>-->
+  <!--                                   <depth>10</depth>-->
+                                </history>
+                            </datareader_qos>
+                            <filter name="Extreme_Temperature2" kind="builtin.sql">
+                                <expression> (temperature>40) </expression>
+                            </filter>
+                        </data_reader>
+
+                        <data_reader name="actuatorStatus1" topic_ref="DashboardStatus1" >
+                            <datareader_qos>
+                                <reliability>
+                                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                                </reliability>
+                                <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                </durability>
+                                <history>
+	<!--	                            <kind>KEEP_ALL_HISTORY_QOS</kind>-->
+                                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                                    <depth>10</depth>
+	                            </history>
+                            </datareader_qos>
+                        </data_reader>
+                        <data_reader name="actuatorStatus2" topic_ref="DashboardStatus2" >
+                            <datareader_qos>
+                                <reliability>
+                                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                                </reliability>
+                                <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                                </durability>
+                                <history>
+<!--		                    <kind>KEEP_ALL_HISTORY_QOS</kind>-->
+                                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                                    <depth>10</depth>
+	                            </history>
+                            </datareader_qos>
+                        </data_reader>
+                    </subscriber>
+            </domain_participant>
+        </domain_participant_library>
+</dds>
+
+
+
