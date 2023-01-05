@@ -60,10 +60,10 @@ CREATE TABLE NOT_CUSTOMERS (
 
 --DROP TABLE DELIVERIES 
 CREATE TABLE DELIVERIES (
-[Address–Country]	varchar(20)		not null, 
+[Addressâ€“Country]	varchar(20)		not null, 
 [Delivery Type]		varchar(20)		not null, 
 [Delivery Price]	decimal(10,2)	not null, 
-	constraint PK_DELIVERIES PRIMARY KEY ([Address–Country],[Delivery Type])
+	constraint PK_DELIVERIES PRIMARY KEY ([Addressâ€“Country],[Delivery Type])
 )
 
 --DROP TABLE ORDERS
@@ -71,13 +71,13 @@ CREATE TABLE ORDERS (
 [Purchase ID]	int		not null, 
 [E-mail_NC]	varchar(40)		null, 
 [E-mail]	varchar(40)		null , 
-[Address–Country]	varchar(20)		not null, 
+[Addressâ€“Country]	varchar(20)		not null, 
 [Delivery Type]		varchar(20)		not null, 
-[Address–State]		varchar(20)		not null, 
-[Address–City]		varchar(20)		not null, 
-[Address–Street]	varchar(20)		not null, 
-[Address–Building]	varchar(10)		not null, 
-[Address–Apartment]	varchar(10)		not null, 
+[Addressâ€“State]		varchar(20)		not null, 
+[Addressâ€“City]		varchar(20)		not null, 
+[Addressâ€“Street]	varchar(20)		not null, 
+[Addressâ€“Building]	varchar(10)		not null, 
+[Addressâ€“Apartment]	varchar(10)		not null, 
 [Zip Code]		char(7)		not null , 
 [Order DT]		Date	not null, 
 [CC number]		varchar(18)		not null, 
@@ -85,7 +85,7 @@ CREATE TABLE ORDERS (
 	constraint FK_order FOREIGN KEY ([E-mail]) references CUSTOMERS([E-mail]),
 	constraint FK_order2 FOREIGN KEY ([CC number]) references PAYMENTS([CC number]),
 	constraint FK_order3 FOREIGN KEY ([E-mail_NC]) references NOT_CUSTOMERS([E-mail_NC]),
-	constraint FK_order4 FOREIGN KEY ([Address–Country],[Delivery Type]) references DELIVERIES([Address–Country],[Delivery Type])
+	constraint FK_order4 FOREIGN KEY ([Addressâ€“Country],[Delivery Type]) references DELIVERIES([Addressâ€“Country],[Delivery Type])
 )
 
 --DROP TABLE ORDERS_PHONES
@@ -140,7 +140,7 @@ CREATE TABLE QUESTIONS(
 [Item ID]	varchar(40)		not null,  
 [Question number] int not null, 
 DT datetime not null, 
-[Content–Question] varchar(256) not null, 
+[Contentâ€“Question] varchar(256) not null, 
 [E-mail] varchar(40) not null,
 constraint PK_Question PRIMARY KEY ([Item ID],[Question number]),
 constraint FK_Question FOREIGN KEY ([Item ID]) references ITEMS([Item ID]),
@@ -152,7 +152,7 @@ CREATE TABLE ANSWERS(
 [Item ID]	varchar(40)		not null,
 [Question number] int not null, 
 DT datetime not null, 
-[Content–Answer] varchar(256) not null, 
+[Contentâ€“Answer] varchar(256) not null, 
 [E-mail] varchar(40) not null,
 	constraint PK_Answer PRIMARY KEY (DT,[Item ID], [Question number]),
 	constraint FK_Answer FOREIGN KEY ([Item ID], [Question number]) references QUESTIONS([Item ID],[Question number]),
@@ -247,17 +247,17 @@ FROM ITEMS i join (select  orderIDT=[Item ID], [view count]=COUNT(*)
 order by [view count] desc
 
 -- second nested Query
-select [Address–Country]
+select [Addressâ€“Country]
 from ORDERS o join(select id=[Purchase ID], [num in orders]=sum(Quantity)
                     from INCLUDES 
 					group by [Purchase ID])itemo on o.[Purchase ID]=itemo.id
-group by [Address–Country]
+group by [Addressâ€“Country]
 having sum([num in orders])>=(select max(total)
-								from (select [Address–Country],total=sum([num in orders])
+								from (select [Addressâ€“Country],total=sum([num in orders])
 								from ORDERS o join(select id=[Purchase ID], [num in orders]=sum(Quantity)
 													from INCLUDES 
 													group by [Purchase ID])itemo on o.[Purchase ID]=itemo.id
-								group by [Address–Country]) as t1)
+								group by [Addressâ€“Country]) as t1)
 
 --first nested Query with other tools
 alter table customers add Vital bit
@@ -315,7 +315,7 @@ AS
 		SET @L_Income = (SELECT SUM(Price*Quantity)
 		FROM Includes I join Orders O on I.[Purchase ID]=O.[Purchase ID] 
 				join Items on I.[Item ID]=Items.[Item ID]
-		WHERE [Address–Country]=@Country)
+		WHERE [Addressâ€“Country]=@Country)
 
 	
 		SET @L_totalIncome = (SELECT sum(Price*Quantity)
@@ -328,17 +328,17 @@ AS
 				END
 	END
 --Demonstration 
-select [Address–Country],  Relative_Income=dbo.Calculate_Relative_Income('Argentina')
+select [Addressâ€“Country],  Relative_Income=dbo.Calculate_Relative_Income('Argentina')
 from Orders
-WHERE [Address–Country]='Argentina'
+WHERE [Addressâ€“Country]='Argentina'
 union
-select [Address–Country],  Relative_Income=dbo.Calculate_Relative_Income('Brazil')
+select [Addressâ€“Country],  Relative_Income=dbo.Calculate_Relative_Income('Brazil')
 from Orders
-WHERE [Address–Country]='Brazil'
+WHERE [Addressâ€“Country]='Brazil'
 union
-select [Address–Country],  Relative_Income=dbo.Calculate_Relative_Income('Israel')
+select [Addressâ€“Country],  Relative_Income=dbo.Calculate_Relative_Income('Israel')
 from Orders
-WHERE [Address–Country]='Israel'
+WHERE [Addressâ€“Country]='Israel'
 
 --function 2
 
@@ -364,7 +364,7 @@ set Total_Cost = (select Total
 				 from (select ord.[Purchase ID],Total = t1.cost+d.[Delivery Price]
 from ORDERS as ord join (select inc.[Purchase ID], cost = sum(inc.Quantity*it.Price)
 						from INCLUDES as inc join ITEMS as it on it.[Item ID]=inc.[Item ID]
-						group by inc.[Purchase ID]) as t1 on t1.[Purchase ID]=ord.[Purchase ID] join DELIVERIES as d on ord.[Address–Country]=d.[Address–Country] and ord.[Delivery Type]=d.[Delivery Type]) as ttc
+						group by inc.[Purchase ID]) as t1 on t1.[Purchase ID]=ord.[Purchase ID] join DELIVERIES as d on ord.[Addressâ€“Country]=d.[Addressâ€“Country] and ord.[Delivery Type]=d.[Delivery Type]) as ttc
 				 where orders.[Purchase ID]=ttc.[Purchase ID])
 select * from ORDERS
 --drop TRIGGER Update_Total_Cost
@@ -378,13 +378,13 @@ set Total_Cost = (case when ORDERS.[Purchase ID] in (select [Purchase ID] from i
 from inserted join (select ord.[Purchase ID],Total = t1.cost+d.[Delivery Price]
 from ORDERS as ord join (select inc.[Purchase ID], cost = sum(inc.Quantity*it.Price)
 						from INCLUDES as inc join ITEMS as it on it.[Item ID]=inc.[Item ID]
-						group by inc.[Purchase ID]) as t1 on t1.[Purchase ID]=ord.[Purchase ID] join DELIVERIES as d on ord.[Address–Country]=d.[Address–Country] and ord.[Delivery Type]=d.[Delivery Type]) as t2 on t2.[Purchase ID]=inserted.[Purchase ID]
+						group by inc.[Purchase ID]) as t1 on t1.[Purchase ID]=ord.[Purchase ID] join DELIVERIES as d on ord.[Addressâ€“Country]=d.[Addressâ€“Country] and ord.[Delivery Type]=d.[Delivery Type]) as t2 on t2.[Purchase ID]=inserted.[Purchase ID]
 where ORDERS.[Purchase ID]=inserted.[Purchase ID]) else Total_Cost end)
 
 
 ------Exmp-------
 
-insert into ORDERS ([Purchase ID],[E-mail],[Address–Country],[Delivery Type],[Address–State],[Address–City],[Address–Street],[Address–Building],[Address–Apartment],[Zip Code],[Order DT],[CC number]) values (306,'challe0@jalbum.net','Argentina','VIP','Virginia','Carlos Casares','Schmedeman','684','748','163','2019-02-10 10:13:09','4916320112667890')
+insert into ORDERS ([Purchase ID],[E-mail],[Addressâ€“Country],[Delivery Type],[Addressâ€“State],[Addressâ€“City],[Addressâ€“Street],[Addressâ€“Building],[Addressâ€“Apartment],[Zip Code],[Order DT],[CC number]) values (306,'challe0@jalbum.net','Argentina','VIP','Virginia','Carlos Casares','Schmedeman','684','748','163','2019-02-10 10:13:09','4916320112667890')
 insert into INCLUDES ([Purchase ID], [Item ID], Quantity) values(306,'BH#3',5)
 insert into INCLUDES ([Purchase ID], [Item ID], Quantity) values(306,'BH#10',5)
 
@@ -402,13 +402,13 @@ where [Purchase ID]=306
 CREATE PROCEDURE SP_UpdateDeliveryType @PID int, @Type varchar(20)
 AS
 select o.[Purchase ID],o.[Delivery Type],d.[Delivery Price]
-from ORDERS as o join DELIVERIES as d on o.[Address–Country]=d.[Address–Country] and o.[Delivery Type]=d.[Delivery Type]
+from ORDERS as o join DELIVERIES as d on o.[Addressâ€“Country]=d.[Addressâ€“Country] and o.[Delivery Type]=d.[Delivery Type]
 where [Purchase ID]=@PID
 update ORDERS
 set [Delivery Type] = @Type
 where [Purchase ID] = @PID
 select o.[Purchase ID],o.[Delivery Type],d.[Delivery Price]
-from ORDERS as o join DELIVERIES as d on o.[Address–Country]=d.[Address–Country] and o.[Delivery Type]=d.[Delivery Type]
+from ORDERS as o join DELIVERIES as d on o.[Addressâ€“Country]=d.[Addressâ€“Country] and o.[Delivery Type]=d.[Delivery Type]
 where [Purchase ID]=@PID
 
 --example
